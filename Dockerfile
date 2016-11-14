@@ -14,18 +14,25 @@ RUN echo 'deb http://packages.dotdeb.org jessie all' >> /etc/apt/sources.list.d/
 # Install PHP, cURL, Git
 RUN apt-get update -qqy \
   && apt-get -qqy install \
-    php7.0-cli \
-    php7.0-cgi \
-    php7.0-mysql \
-    php7.0-pgsql \
-    php7.0-mcrypt \
+    php7.0-fpm \
+    php7.0-redis \
     php7.0-curl \
-    php7.0-json \
-    php7.0-xml \
-    php7.0-mbstring \
+    php7.0-memcached \
+    php7.0-mysql \
+    php7.0-sqlite \
+    php7.0-gd \
+    php7.0-apcu \
+    php7.0-curl \
     php7.0-imagick \
+    php7.0-mbstring \
+    php7.0-xml \
+    php7.0-zip \
+    php7.0-cgi \
+    ca-certificates \
     curl \
     git \
+    locales-all \
+    qrencode \
     unzip
 
 # Install Composer, Nette Tester
