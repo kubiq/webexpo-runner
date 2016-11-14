@@ -1,0 +1,10 @@
+build_image:
+  image: docker:git
+  services:
+  - docker:dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN gitlab-registry.int.wikidi.net
+    - docker build -t gitlab-registry.int.wikidi.net/webexpo/webexpo-runner
+    - docker push gitlab-registry.int.wikidi.net/webexpo/webexpo-runner:latest
+  only:
+    - master
