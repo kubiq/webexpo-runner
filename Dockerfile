@@ -26,6 +26,7 @@ RUN apt-get update -qqy \
     php7.0-imagick \
     php7.0-mbstring \
     php7.0-xml \
+    php7.0-simplexml \
     php7.0-zip \
     php7.0-cgi \
     ca-certificates \
