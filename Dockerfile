@@ -1,49 +1,46 @@
-# Based on Debian Jessie
-FROM debian:jessie
+
+FROM chrert/docker-arch-yaourt:latest
+
+MAINTAINER Jakub Pistek <mail@jakubpistek.cz>
 
 # Environment
 ENV TESTER_PATH /srv/tester/
 ENV TESTER_BIN /srv/tester/vendor/bin/tester
 ENV APP_PATH /srv/app/
 
-ADD dotdeb.gpg /root/dotdeb.gpg
+ADD archlinuxfr.repo /root/archlinuxfr.repo
+RUN cat /root/archlinuxfr.repo >> /etc/pacman.conf
 
-RUN apt-key add /root/dotdeb.gpg
-RUN echo 'deb http://packages.dotdeb.org jessie all' >> /etc/apt/sources.list.d/dotdeb.list
-
-# Install PHP, cURL, Git
-RUN apt-get update -qqy \
-  && apt-get -qqy install \
-    php7.0-fpm \
-    php7.0-redis \
-    php7.0-curl \
-    php7.0-memcached \
-    php7.0-mysql \
-    php7.0-sqlite \
-    php7.0-gd \
-    php7.0-apcu \
-    php7.0-curl \
-    php7.0-imagick \
-    php7.0-mbstring \
-    php7.0-xml \
-    php7.0-simplexml \
-    php7.0-zip \
-    php7.0-cgi \
-    ca-certificates \
-    curl \
+# Install PHP, git...
+RUN pacman --noconfirm -Sy archlinux-keyring \
+  && pacman --noconfirm -Su \
+    base-devel \
+    openssh \
     git \
-    locales-all \
+    php-fpm \
+    php-memcached \
+    php-sqlite \
+    php-gd \
+    php-apcu \
+    php-cgi \
     qrencode \
-    unzip
+    unzip \
+    yaourt
+
+USER yaourt
+RUN yaourt -S --noconfirm php-imagick
+USER root
+
+# enable some php libs
+RUN sed -i.bak 's/^;extension=iconv.so/extension=iconv.so/' /etc/php/php.ini \
+ && sed -i.bak 's/^;extension=gd.so/extension=gd.so/' /etc/php/php.ini \
+ && sed -i.bak 's/^;extension=pdo_mysql.so/extension=pdo_mysql.so/' /etc/php/php.ini
 
 # Install Composer, Nette Tester
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer && \
   mkdir $TESTER_PATH && mkdir $APP_PATH && \
   composer require nette/tester:~1.6.0 -d $TESTER_PATH
-
-# Clean image
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Volumes
 VOLUME $APP_PATH
